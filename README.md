@@ -4,7 +4,7 @@
 
 ## Сайт
 
-[ивановапсихолог.рф](https://xn--80aaebgzeyokdbj2a5d.xn--p1ai)
+[ivanova-psiholog.ru](https://ivanova-psiholog.ru)
 
 ## Стек
 
