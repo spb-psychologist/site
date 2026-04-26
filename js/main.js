@@ -12,26 +12,26 @@ function initMobileNav() {
 
   if (!toggle || !nav) return;
 
-  let scrollY = 0;
+  function preventTouchScroll(e) {
+    if (!nav.contains(e.target)) e.preventDefault();
+  }
 
   function openNav() {
-    scrollY = window.scrollY;
-    document.body.style.top = `-${scrollY}px`;
     toggle.setAttribute('aria-expanded', 'true');
     toggle.classList.add('is-active');
     nav.classList.add('is-open');
     document.body.classList.add('nav-open');
+    document.addEventListener('touchmove', preventTouchScroll, { passive: false });
     const firstLink = nav.querySelector('a');
     if (firstLink) firstLink.focus();
   }
 
   function closeNav() {
-    document.body.style.top = '';
     toggle.setAttribute('aria-expanded', 'false');
     toggle.classList.remove('is-active');
     nav.classList.remove('is-open');
     document.body.classList.remove('nav-open');
-    window.scrollTo(0, scrollY);
+    document.removeEventListener('touchmove', preventTouchScroll);
   }
 
   toggle.addEventListener('click', () => {

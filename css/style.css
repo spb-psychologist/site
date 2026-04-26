@@ -106,11 +106,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Prevent body scroll when mobile nav is open (position:fixed fixes iOS Safari) */
+/* Prevent body scroll when mobile nav is open */
 body.nav-open {
   overflow: hidden;
-  position: fixed;
-  width: 100%;
 }
 
 /* Mobile nav overlay */
