@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI Kit — Маргарита Иванова</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── design tokens (mirrored from style.css) ── */
+    :root {
+      --color-bg:           #FAF8F5;
+      --color-bg-alt:       #F2ECE6;
+      --color-text:         #2D2D2D;
+      --color-text-muted:   #6E6760;
+      --color-text-light:   #9E9790;
+      --color-accent:       #C4896F;
+      --color-accent-dark:  #A8724E;
+      --color-accent-light: #E8C9B8;
+      --color-secondary:    #8B9E8C;
+      --color-card:         #F0EBE5;
+      --color-card-hover:   #EAE2DA;
+      --color-border:       #E3D9D0;
+      --color-border-light: #EDE7E0;
+      --color-white:        #FFFFFF;
+      --color-cta-bg:       #3D3530;
+      --color-cta-text:     #FAF8F5;
+
+      --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+
+      --text-xs:   0.75rem;
+      --text-sm:   0.875rem;
+      --text-base: 1rem;
+      --text-md:   1.0625rem;
+      --text-lg:   1.125rem;
+      --text-xl:   1.25rem;
+      --text-2xl:  1.5rem;
+      --text-3xl:  1.875rem;
+      --text-4xl:  2.25rem;
+      --text-5xl:  3rem;
+
+      --sp-1:  4px;  --sp-2:  8px;  --sp-3:  12px; --sp-4:  16px;
+      --sp-5:  20px; --sp-6:  24px; --sp-8:  32px;  --sp-10: 40px;
+      --sp-12: 48px; --sp-16: 64px; --sp-20: 80px;  --sp-24: 96px;
+
+      --radius-sm:  6px;  --radius-md: 12px; --radius-lg: 16px;
+      --radius-xl:  24px; --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(45,35,30,.06), 0 1px 2px rgba(45,35,30,.04);
+      --shadow-md: 0 4px 16px rgba(45,35,30,.08), 0 2px 6px rgba(45,35,30,.05);
+      --shadow-lg: 0 12px 40px rgba(45,35,30,.12), 0 4px 12px rgba(45,35,30,.07);
+      --shadow-xl: 0 24px 64px rgba(45,35,30,.15), 0 8px 24px rgba(45,35,30,.08);
+
+      --transition-fast: 150ms ease;
+      --transition-base: 250ms ease;
+      --transition-slow: 400ms cubic-bezier(.4,0,.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: var(--text-md);
+      line-height: 1.7;
+      color: var(--color-text);
+      background: var(--color-bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    ul, ol { list-style: none; }
+    img, svg { display: block; max-width: 100%; }
+    button { font-family: inherit; cursor: pointer; background: none; border: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ── UI Kit shell ── */
+    .kit-sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 220px;
+      background: var(--color-cta-bg);
+      padding: var(--sp-8) var(--sp-6);
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .kit-sidebar__logo {
+      font-family: var(--font-heading);
+      font-size: var(--text-lg);
+      color: var(--color-cta-text);
+      margin-bottom: var(--sp-2);
+      font-weight: 500;
+    }
+
+    .kit-sidebar__sub {
+      font-size: var(--text-xs);
+      color: rgba(250,248,245,.4);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: var(--sp-8);
+    }
+
+    .kit-nav { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+    .kit-nav a {
+      font-size: var(--text-sm);
+      color: rgba(250,248,245,.6);
+      padding: var(--sp-2) var(--sp-3);
+      border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .kit-nav a:hover { color: var(--color-cta-text); background: rgba(250,248,245,.06); }
+
+    .kit-main {
+      margin-left: 220px;
+      padding: var(--sp-12) clamp(24px, 4vw, 64px);
+      max-width: 1100px;
+    }
+
+    /* ── Section wrapper ── */
+    .kit-section {
+      margin-bottom: var(--sp-24);
+      padding-top: var(--sp-8);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .kit-section:first-child { border-top: none; }
+
+    .kit-section__title {
+      font-family: var(--font-heading);
+      font-size: var(--text-2xl);
+      font-weight: 500;
+      color: var(--color-text);
+      margin-bottom: var(--sp-2);
+    }
+
+    .kit-section__desc {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--sp-10);
+    }
+
+    .kit-group { margin-bottom: var(--sp-8); }
+
+    .kit-label {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--color-text-light);
+      margin-bottom: var(--sp-4);
+    }
+
+    .kit-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: var(--sp-4);
+    }
+
+    .kit-col { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+    /* dark background swatch for light-on-dark components */
+    .kit-dark-bg {
+      background: var(--color-cta-bg);
+      padding: var(--sp-8);
+      border-radius: var(--radius-lg);
+    }
+
+    /* ── Color swatches ── */
+    .swatches { display: flex; flex-wrap: wrap; gap: var(--sp-4); }
+
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      min-width: 96px;
+    }
+
+    .swatch__block {
+      width: 96px;
+      height: 64px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(0,0,0,.07);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .swatch__name { font-size: var(--text-xs); font-weight: 600; color: var(--color-text); }
+    .swatch__value { font-size: var(--text-xs); color: var(--color-text-muted); font-family: monospace; }
+
+    /* ── Spacing scale ── */
+    .spacing-row { display: flex; align-items: flex-end; gap: var(--sp-3); flex-wrap: wrap; }
+
+    .sp-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .sp-block__bar {
+      background: var(--color-accent);
+      opacity: .6;
+      border-radius: var(--radius-sm);
+      width: 20px;
+    }
+
+    .sp-block__label { font-size: var(--text-xs); color: var(--color-text-muted); white-space: nowrap; }
+
+    /* ── Radius swatches ── */
+    .radius-row { display: flex; flex-wrap: wrap; gap: var(--sp-6); align-items: flex-end; }
+
+    .radius-swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    .radius-swatch__box {
+      width: 64px;
+      height: 64px;
+      background: var(--color-accent);
+      opacity: .55;
+    }
+
+    .radius-swatch__label { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+    /* ── Shadow swatches ── */
+    .shadow-row { display: flex; flex-wrap: wrap; gap: var(--sp-8); }
+
+    .shadow-swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-4);
+    }
+
+    .shadow-swatch__box {
+      width: 96px;
+      height: 64px;
+      background: var(--color-white);
+      border-radius: var(--radius-md);
+    }
+
+    .shadow-swatch__label { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+    /* ── Typography specimen ── */
+    .type-specimen { display: flex; flex-direction: column; gap: var(--sp-6); }
+
+    .type-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--sp-8);
+      padding-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .type-meta { min-width: 120px; }
+    .type-meta__name { font-size: var(--text-xs); font-weight: 600; color: var(--color-text-light); text-transform: uppercase; letter-spacing: .08em; }
+    .type-meta__value { font-size: var(--text-xs); color: var(--color-text-muted); font-family: monospace; }
+
+    /* ── Buttons (mirrored from style.css) ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      padding: 13px 28px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: var(--text-base);
+      text-decoration: none;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition:
+        background var(--transition-base),
+        color var(--transition-base),
+        border-color var(--transition-base),
+        transform var(--transition-fast),
+        box-shadow var(--transition-base);
+      white-space: nowrap;
+    }
+
+    .btn--primary   { background: var(--color-accent); color: var(--color-white); border-color: var(--color-accent); }
+    .btn--primary:hover   { background: var(--color-accent-dark); border-color: var(--color-accent-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+    .btn--ghost     { background: transparent; color: var(--color-text); border-color: var(--color-border); }
+    .btn--ghost:hover     { border-color: var(--color-accent); color: var(--color-accent); transform: translateY(-2px); }
+
+    .btn--ghost-light { background: transparent; color: rgba(250,248,245,.85); border-color: rgba(250,248,245,.35); }
+    .btn--ghost-light:hover { color: var(--color-white); border-color: rgba(250,248,245,.7); transform: translateY(-2px); }
+
+    .btn--outline   { background: transparent; color: var(--color-accent); border-color: var(--color-accent); }
+    .btn--outline:hover   { background: var(--color-accent); color: var(--color-white); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+    .btn--nav {
+      background: var(--color-accent); color: var(--color-white); border-color: var(--color-accent);
+      padding: 9px 20px; font-size: var(--text-sm);
+    }
+    .btn--nav:hover { background: var(--color-accent-dark); border-color: var(--color-accent-dark); }
+
+    .btn--large  { padding: 16px 36px; font-size: var(--text-md); }
+    .btn--small  { padding: 8px 16px; font-size: var(--text-sm); }
+    .btn--full   { width: 100%; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+
+    /* ── Badge / label ── */
+    .badge {
+      display: inline-block;
+      padding: var(--sp-1) var(--sp-4);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border-radius: var(--radius-full);
+      width: fit-content;
+    }
+
+    .badge--accent    { background: var(--color-accent);    color: var(--color-white); }
+    .badge--secondary { background: var(--color-secondary); color: var(--color-white); }
+    .badge--muted     { background: var(--color-card);      color: var(--color-text-muted); border: 1px solid var(--color-border); }
+
+    /* ── Eyebrow ── */
+    .eyebrow {
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+      margin-bottom: var(--sp-4);
+    }
+
+    .eyebrow--light { color: var(--color-accent-light); }
+
+    /* ── Cards ── */
+    .area-card {
+      padding: var(--sp-8);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      max-width: 280px;
+      transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+    }
+
+    .area-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--color-accent-light); }
+
+    .area-card__icon { color: var(--color-accent); margin-bottom: var(--sp-5); }
+
+    .area-card__title {
+      font-size: var(--text-base); font-weight: 600; font-family: var(--font-body);
+      margin-bottom: var(--sp-3); color: var(--color-text); line-height: 1.3;
+    }
+
+    .area-card__text { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.65; }
+
+    /* Principle card */
+    .principle {
+      padding: var(--sp-6);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      max-width: 260px;
+      transition: box-shadow var(--transition-base), transform var(--transition-base);
+    }
+
+    .principle:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+    .principle__icon { color: var(--color-accent); margin-bottom: var(--sp-4); }
+
+    .principle__title {
+      font-size: var(--text-base); font-weight: 600; font-family: var(--font-body);
+      margin-bottom: var(--sp-2); color: var(--color-text);
+    }
+
+    .principle p { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; }
+
+    /* Trust item */
+    .trust__item {
+      padding: var(--sp-8);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      max-width: 260px;
+      transition: box-shadow var(--transition-base), transform var(--transition-base);
+    }
+
+    .trust__item:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+
+    .trust__item-icon { color: var(--color-accent); margin-bottom: var(--sp-5); }
+
+    .trust__item h3 {
+      font-family: var(--font-body); font-weight: 600;
+      font-size: var(--text-base); margin-bottom: var(--sp-3); color: var(--color-text);
+    }
+
+    .trust__item p { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.65; }
+
+    /* Format card (condensed for kit) */
+    .format-card {
+      padding: var(--sp-8);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      max-width: 340px;
+      transition: box-shadow var(--transition-base);
+    }
+
+    .format-card:hover { box-shadow: var(--shadow-lg); }
+
+    .format-card--primary { border-color: var(--color-accent-light); }
+
+    .format-card__label {
+      display: inline-block;
+      padding: var(--sp-1) var(--sp-4);
+      background: var(--color-accent);
+      color: var(--color-white);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border-radius: var(--radius-full);
+      width: fit-content;
+    }
+
+    .format-card__label--alt { background: var(--color-secondary); }
+
+    .format-card__title { font-size: var(--text-xl); line-height: 1.25; font-family: var(--font-heading); font-weight: 500; }
+
+    .format-card__desc { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.7; }
+
+    .format-card__price {
+      display: flex; align-items: baseline; gap: var(--sp-2);
+      padding-top: var(--sp-4); border-top: 1px solid var(--color-border);
+    }
+
+    .format-card__price-amount { font-family: var(--font-heading); font-size: var(--text-2xl); font-weight: 500; }
+    .format-card__price-note   { font-size: var(--text-sm); color: var(--color-text-muted); }
+
+    /* Process step */
+    .process__step {
+      display: flex;
+      gap: var(--sp-6);
+      padding: var(--sp-6) var(--sp-8);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      max-width: 480px;
+      transition: box-shadow var(--transition-base), transform var(--transition-base);
+    }
+
+    .process__step:hover { box-shadow: var(--shadow-md); transform: translateX(4px); }
+
+    .process__step-num {
+      font-family: var(--font-heading);
+      font-size: var(--text-4xl);
+      font-weight: 400;
+      color: var(--color-accent-light);
+      line-height: 1;
+      flex-shrink: 0;
+      width: 56px;
+      text-align: right;
+    }
+
+    .process__step-content h3 {
+      font-family: var(--font-body); font-weight: 600;
+      font-size: var(--text-lg); margin-bottom: var(--sp-2); color: var(--color-text);
+    }
+
+    .process__step-content p { font-size: var(--text-base); color: var(--color-text-muted); line-height: 1.65; }
+
+    /* Testimonial card */
+    .testimonial-card {
+      padding: var(--sp-8);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      display: flex; flex-direction: column; gap: var(--sp-5);
+      max-width: 320px;
+      transition: box-shadow var(--transition-base), transform var(--transition-base);
+    }
+
+    .testimonial-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+
+    .testimonial-card__stars { font-size: var(--text-lg); color: var(--color-accent); letter-spacing: 2px; }
+
+    .testimonial-card blockquote p {
+      font-family: var(--font-heading); font-style: italic;
+      font-size: var(--text-lg); color: var(--color-text); line-height: 1.65;
+    }
+
+    .testimonial-card__footer {
+      display: flex; flex-direction: column; gap: 2px;
+      margin-top: auto; padding-top: var(--sp-5);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .testimonial-card__footer strong { font-size: var(--text-base); font-weight: 600; }
+    .testimonial-card__footer span   { font-size: var(--text-sm); color: var(--color-text-muted); }
+
+    /* Quote block */
+    .about__quote {
+      max-width: 400px;
+      padding: var(--sp-6) var(--sp-8);
+      background: var(--color-bg);
+      border-left: 3px solid var(--color-accent);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .about__quote p {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: var(--text-lg);
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+
+    /* Supervision note */
+    .supervision-note {
+      display: flex; align-items: flex-start; gap: var(--sp-4);
+      padding: var(--sp-5) var(--sp-6);
+      background: rgba(196,137,111,.1);
+      border-radius: var(--radius-md);
+      max-width: 420px;
+    }
+
+    .supervision-note svg { color: var(--color-accent); flex-shrink: 0; margin-top: 2px; }
+
+    .supervision-note p { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; font-style: italic; }
+
+    /* ── Form elements ── */
+    .form__group { display: flex; flex-direction: column; gap: var(--sp-2); max-width: 400px; }
+
+    .form__label { font-size: var(--text-sm); font-weight: 500; color: var(--color-text); }
+    .form__label span[aria-hidden] { color: var(--color-accent); }
+    .form__label-note { color: var(--color-text-muted); font-weight: 400; }
+
+    .form__input,
+    .form__textarea {
+      width: 100%;
+      padding: 12px 16px;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--color-text);
+      background: var(--color-bg);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      appearance: none;
+    }
+
+    .form__input::placeholder,
+    .form__textarea::placeholder { color: var(--color-text-light); }
+
+    .form__input:focus,
+    .form__textarea:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(196,137,111,.15);
+    }
+
+    .form__input--error { border-color: #C4696F; }
+    .form__error { font-size: var(--text-xs); color: #C4696F; margin-top: var(--sp-1); }
+    .form__textarea { resize: vertical; min-height: 100px; }
+
+    /* ── FAQ accordion ── */
+    .faq__list { display: flex; flex-direction: column; gap: var(--sp-2); max-width: 560px; }
+
+    .faq__item {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-card);
+      overflow: hidden;
+      transition: box-shadow var(--transition-base);
+    }
+
+    .faq__item.is-open { box-shadow: var(--shadow-md); }
+
+    .faq__question {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--sp-6);
+      padding: var(--sp-5) var(--sp-6);
+      text-align: left;
+      font-size: var(--text-base); font-weight: 500; color: var(--color-text);
+      transition: color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .faq__question:hover { color: var(--color-accent); background: var(--color-card-hover); }
+    .faq__item.is-open .faq__question { color: var(--color-accent); }
+
+    .faq__icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; flex-shrink: 0; position: relative;
+    }
+
+    .faq__icon::before, .faq__icon::after {
+      content: '';
+      position: absolute;
+      background: var(--color-accent);
+      border-radius: 2px;
+      transition: transform var(--transition-base), opacity var(--transition-base);
+    }
+
+    .faq__icon::before { width: 14px; height: 2px; }
+    .faq__icon::after  { width: 2px; height: 14px; }
+
+    .faq__item.is-open .faq__icon::after { transform: rotate(90deg); opacity: 0; }
+
+    .faq__answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--transition-slow), padding var(--transition-base);
+      padding: 0 var(--sp-6);
+    }
+
+    .faq__item.is-open .faq__answer { max-height: 400px; padding-bottom: var(--sp-5); }
+
+    .faq__answer p {
+      font-size: var(--text-base); color: var(--color-text-muted);
+      line-height: 1.75; padding-top: var(--sp-2);
+    }
+
+    /* ── Trust counters ── */
+    .trust-counters { display: flex; align-items: center; gap: var(--sp-6); flex-wrap: wrap; }
+
+    .trust-counter { display: flex; flex-direction: column; gap: 2px; }
+
+    .trust-counter__num {
+      font-family: var(--font-heading); font-size: var(--text-xl);
+      font-weight: 600; color: var(--color-text); line-height: 1;
+    }
+
+    .trust-counter__label { font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: .06em; }
+
+    .trust-sep { width: 1px; height: 32px; background: var(--color-border); flex-shrink: 0; }
+
+    /* ── Navigation bar demo ── */
+    .nav-demo {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--sp-8);
+      padding: 0 var(--sp-8);
+      height: 72px;
+      background: rgba(250,248,245,.95);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-logo {
+      font-family: var(--font-heading); font-size: var(--text-xl);
+      font-weight: 500; color: var(--color-text);
+    }
+
+    .nav-links { display: flex; align-items: center; gap: var(--sp-1); }
+
+    .nav-links a {
+      padding: var(--sp-2) var(--sp-3);
+      font-size: var(--text-sm); font-weight: 500;
+      color: var(--color-text-muted); border-radius: var(--radius-sm);
+      transition: color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .nav-links a:hover { color: var(--color-text); background: var(--color-card); }
+
+    /* ── Hamburger icon ── */
+    .hamburger {
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 5px; width: 40px; height: 40px; padding: var(--sp-2);
+      border-radius: var(--radius-sm);
+      transition: background var(--transition-fast);
+    }
+
+    .hamburger:hover { background: var(--color-card); }
+
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--color-text); border-radius: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+
+    @media (max-width: 767px) {
+      .kit-sidebar { display: none; }
+      .kit-main { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar nav ── -->
+<aside class="kit-sidebar">
+  <p class="kit-sidebar__logo">Маргарита Иванова</p>
+  <p class="kit-sidebar__sub">UI Kit</p>
+
+  <nav class="kit-nav">
+    <a href="#colors">Цвета</a>
+    <a href="#typography">Типографика</a>
+    <a href="#spacing">Отступы</a>
+    <a href="#radius">Радиусы</a>
+    <a href="#shadows">Тени</a>
+    <a href="#buttons">Кнопки</a>
+    <a href="#badges">Бейджи</a>
+    <a href="#logo">Логотип</a>
+    <a href="#logo-horizontal">Логотип горизонт.</a>
+    <a href="#navigation">Навигация</a>
+    <a href="#cards">Карточки</a>
+    <a href="#process">Шаги процесса</a>
+    <a href="#quotes">Цитата / заметка</a>
+    <a href="#counters">Счётчики</a>
+    <a href="#forms">Формы</a>
+    <a href="#faq">FAQ аккордеон</a>
+  </nav>
+</aside>
+
+<!-- ── Main content ── -->
+<main class="kit-main">
+
+  <div style="margin-bottom:var(--sp-12)">
+    <p class="eyebrow">Документация</p>
+    <h1 style="font-family:var(--font-heading);font-size:clamp(2rem,5vw,3.5rem);font-weight:500;line-height:1.1;margin-bottom:var(--sp-4)">UI Kit</h1>
+    <p style="font-size:var(--text-lg);color:var(--color-text-muted);max-width:560px">
+      Все токены дизайна и UI-компоненты сайта Маргариты Ивановой — психолога в Санкт-Петербурге.
+      Шрифты: <strong>Playfair Display</strong> (заголовки) · <strong>Inter</strong> (текст).
+    </p>
+  </div>
+
+  <!-- ════════ COLORS ════════ -->
+  <section class="kit-section" id="colors">
+    <h2 class="kit-section__title">Цвета</h2>
+    <p class="kit-section__desc">CSS-переменные определены в <code>:root</code> файла <code>css/style.css</code>.</p>
+
+    <div class="kit-group">
+      <p class="kit-label">Фон</p>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch__block" style="background:#FAF8F5"></div>
+          <span class="swatch__name">bg</span>
+          <span class="swatch__value">#FAF8F5</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#F2ECE6"></div>
+          <span class="swatch__name">bg-alt</span>
+          <span class="swatch__value">#F2ECE6</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#F0EBE5"></div>
+          <span class="swatch__name">card</span>
+          <span class="swatch__value">#F0EBE5</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#EAE2DA"></div>
+          <span class="swatch__name">card-hover</span>
+          <span class="swatch__value">#EAE2DA</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#3D3530"></div>
+          <span class="swatch__name">cta-bg</span>
+          <span class="swatch__value">#3D3530</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Акцент</p>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch__block" style="background:#C4896F"></div>
+          <span class="swatch__name">accent</span>
+          <span class="swatch__value">#C4896F</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#A8724E"></div>
+          <span class="swatch__name">accent-dark</span>
+          <span class="swatch__value">#A8724E</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#E8C9B8"></div>
+          <span class="swatch__name">accent-light</span>
+          <span class="swatch__value">#E8C9B8</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#8B9E8C"></div>
+          <span class="swatch__name">secondary</span>
+          <span class="swatch__value">#8B9E8C</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Текст</p>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch__block" style="background:#2D2D2D"></div>
+          <span class="swatch__name">text</span>
+          <span class="swatch__value">#2D2D2D</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#6E6760"></div>
+          <span class="swatch__name">text-muted</span>
+          <span class="swatch__value">#6E6760</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#9E9790"></div>
+          <span class="swatch__name">text-light</span>
+          <span class="swatch__value">#9E9790</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Границы</p>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch__block" style="background:#E3D9D0"></div>
+          <span class="swatch__name">border</span>
+          <span class="swatch__value">#E3D9D0</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#EDE7E0"></div>
+          <span class="swatch__name">border-light</span>
+          <span class="swatch__value">#EDE7E0</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch__block" style="background:#FFFFFF;border:1px solid #E3D9D0"></div>
+          <span class="swatch__name">white</span>
+          <span class="swatch__value">#FFFFFF</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ TYPOGRAPHY ════════ -->
+  <section class="kit-section" id="typography">
+    <h2 class="kit-section__title">Типографика</h2>
+    <p class="kit-section__desc">Размеры через <code>clamp()</code> — плавно масштабируются. Заголовки — Playfair Display, текст — Inter.</p>
+
+    <div class="type-specimen">
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">h1</p>
+          <p class="type-meta__value">clamp(2.4rem, 6vw, 4.5rem)</p>
+        </div>
+        <h1 style="font-family:var(--font-heading);font-weight:500;line-height:1.1">Заголовок страницы</h1>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">h2</p>
+          <p class="type-meta__value">clamp(1.75rem, 3.5vw, 2.75rem)</p>
+        </div>
+        <h2 style="font-family:var(--font-heading);font-weight:500;line-height:1.2">Заголовок раздела</h2>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">h3</p>
+          <p class="type-meta__value">clamp(1.1rem, 2vw, 1.35rem)</p>
+        </div>
+        <h3 style="font-family:var(--font-heading);font-weight:500;line-height:1.2">Заголовок карточки</h3>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">h4</p>
+          <p class="type-meta__value">1.125rem · Inter 600</p>
+        </div>
+        <h4 style="font-family:var(--font-body);font-weight:600;font-size:var(--text-lg)">Подзаголовок блока</h4>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">eyebrow</p>
+          <p class="type-meta__value">0.75rem · uppercased</p>
+        </div>
+        <div>
+          <p class="eyebrow" style="margin:0">Направления работы</p>
+          <p class="eyebrow eyebrow--light" style="margin-top:var(--sp-2)">На тёмном фоне (--light)</p>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">body · lead</p>
+          <p class="type-meta__value">1.125rem · muted</p>
+        </div>
+        <p style="font-size:var(--text-lg);color:var(--color-text-muted);max-width:480px;line-height:1.75">Я — полимодальный психолог, и это значит, что я не следую одному строгому методу. Я работаю гибко, выбирая то, что подходит именно вам.</p>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">body</p>
+          <p class="type-meta__value">1.0625rem</p>
+        </div>
+        <p style="max-width:480px">Для меня важно, чтобы пространство нашей работы было безопасным и уважительным. Я не тороплю, не оцениваю и не навязываю готовых ответов.</p>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">small / caption</p>
+          <p class="type-meta__value">0.875rem · muted</p>
+        </div>
+        <p style="font-size:var(--text-sm);color:var(--color-text-muted)">Сессия — 50 минут · Онлайн и очно · Санкт-Петербург</p>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">label / meta</p>
+          <p class="type-meta__value">0.75rem · uppercased</p>
+        </div>
+        <p style="font-size:var(--text-xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-light)">Email</p>
+      </div>
+
+      <div class="type-row">
+        <div class="type-meta">
+          <p class="type-meta__name">quote</p>
+          <p class="type-meta__value">Playfair · italic · 1.125rem</p>
+        </div>
+        <blockquote style="font-family:var(--font-heading);font-style:italic;font-size:var(--text-lg);color:var(--color-text);line-height:1.6;max-width:420px">
+          «Каждый человек несёт в себе способность к изменению»
+        </blockquote>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ SPACING ════════ -->
+  <section class="kit-section" id="spacing">
+    <h2 class="kit-section__title">Отступы</h2>
+    <p class="kit-section__desc">Сетка 4px. Переменные от <code>--sp-1</code> (4px) до <code>--sp-24</code> (96px).</p>
+
+    <div class="spacing-row">
+      <div class="sp-block"><div class="sp-block__bar" style="height:4px"></div><span class="sp-block__label">sp-1 · 4px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:8px"></div><span class="sp-block__label">sp-2 · 8px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:12px"></div><span class="sp-block__label">sp-3 · 12px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:16px"></div><span class="sp-block__label">sp-4 · 16px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:20px"></div><span class="sp-block__label">sp-5 · 20px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:24px"></div><span class="sp-block__label">sp-6 · 24px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:32px"></div><span class="sp-block__label">sp-8 · 32px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:40px"></div><span class="sp-block__label">sp-10 · 40px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:48px"></div><span class="sp-block__label">sp-12 · 48px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:64px"></div><span class="sp-block__label">sp-16 · 64px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:80px"></div><span class="sp-block__label">sp-20 · 80px</span></div>
+      <div class="sp-block"><div class="sp-block__bar" style="height:96px"></div><span class="sp-block__label">sp-24 · 96px</span></div>
+    </div>
+  </section>
+
+  <!-- ════════ RADIUS ════════ -->
+  <section class="kit-section" id="radius">
+    <h2 class="kit-section__title">Радиусы скругления</h2>
+    <p class="kit-section__desc">От sm (6px) до full (9999px).</p>
+
+    <div class="radius-row">
+      <div class="radius-swatch">
+        <div class="radius-swatch__box" style="border-radius:var(--radius-sm)"></div>
+        <span class="radius-swatch__label">sm · 6px</span>
+      </div>
+      <div class="radius-swatch">
+        <div class="radius-swatch__box" style="border-radius:var(--radius-md)"></div>
+        <span class="radius-swatch__label">md · 12px</span>
+      </div>
+      <div class="radius-swatch">
+        <div class="radius-swatch__box" style="border-radius:var(--radius-lg)"></div>
+        <span class="radius-swatch__label">lg · 16px</span>
+      </div>
+      <div class="radius-swatch">
+        <div class="radius-swatch__box" style="border-radius:var(--radius-xl)"></div>
+        <span class="radius-swatch__label">xl · 24px</span>
+      </div>
+      <div class="radius-swatch">
+        <div class="radius-swatch__box" style="border-radius:var(--radius-full);width:64px;height:64px"></div>
+        <span class="radius-swatch__label">full</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SHADOWS ════════ -->
+  <section class="kit-section" id="shadows">
+    <h2 class="kit-section__title">Тени</h2>
+    <p class="kit-section__desc">Многослойные тени с тёплым тоном для создания глубины.</p>
+
+    <div class="shadow-row">
+      <div class="shadow-swatch">
+        <div class="shadow-swatch__box" style="box-shadow:var(--shadow-sm)"></div>
+        <span class="shadow-swatch__label">shadow-sm</span>
+      </div>
+      <div class="shadow-swatch">
+        <div class="shadow-swatch__box" style="box-shadow:var(--shadow-md)"></div>
+        <span class="shadow-swatch__label">shadow-md</span>
+      </div>
+      <div class="shadow-swatch">
+        <div class="shadow-swatch__box" style="box-shadow:var(--shadow-lg)"></div>
+        <span class="shadow-swatch__label">shadow-lg</span>
+      </div>
+      <div class="shadow-swatch">
+        <div class="shadow-swatch__box" style="box-shadow:var(--shadow-xl)"></div>
+        <span class="shadow-swatch__label">shadow-xl</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ BUTTONS ════════ -->
+  <section class="kit-section" id="buttons">
+    <h2 class="kit-section__title">Кнопки</h2>
+    <p class="kit-section__desc">Все варианты и размеры. Наведите для hover-эффекта.</p>
+
+    <div class="kit-group">
+      <p class="kit-label">Варианты</p>
+      <div class="kit-row">
+        <button class="btn btn--primary">Primary</button>
+        <button class="btn btn--ghost">Ghost</button>
+        <button class="btn btn--outline">Outline</button>
+        <button class="btn btn--nav">Nav</button>
+      </div>
+    </div>
+
+    <div class="kit-group kit-dark-bg">
+      <p class="kit-label" style="color:rgba(250,248,245,.4)">На тёмном фоне</p>
+      <div class="kit-row">
+        <button class="btn btn--primary">Primary</button>
+        <button class="btn btn--ghost-light">Ghost Light</button>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Размеры</p>
+      <div class="kit-row" style="align-items:center">
+        <button class="btn btn--primary btn--small">Small</button>
+        <button class="btn btn--primary">Default</button>
+        <button class="btn btn--primary btn--large">Large</button>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Состояния</p>
+      <div class="kit-row">
+        <button class="btn btn--primary">Активная</button>
+        <button class="btn btn--primary" disabled>Disabled</button>
+        <button class="btn btn--ghost" disabled>Disabled ghost</button>
+      </div>
+    </div>
+
+    <div class="kit-group" style="max-width:300px">
+      <p class="kit-label">Full width</p>
+      <button class="btn btn--primary btn--full">Записаться на консультацию</button>
+      <button class="btn btn--outline btn--full" style="margin-top:var(--sp-3)">Узнать о формате работы</button>
+    </div>
+  </section>
+
+  <!-- ════════ BADGES ════════ -->
+  <section class="kit-section" id="badges">
+    <h2 class="kit-section__title">Бейджи и метки</h2>
+    <p class="kit-section__desc">Маленькие uppercase-метки для карточек и статусов.</p>
+
+    <div class="kit-row">
+      <span class="badge badge--accent">Основной формат</span>
+      <span class="badge badge--secondary">Для специалистов</span>
+      <span class="badge badge--muted">Нейтральный</span>
+    </div>
+  </section>
+
+  <!-- ════════ LOGO ════════ -->
+  <section class="kit-section" id="logo">
+    <h2 class="kit-section__title">Логотип</h2>
+    <p class="kit-section__desc">Монограмма «МИ» в скруглённом квадрате + полное имя и подзаголовок. Файл: <code>docs/logo.png</code>.</p>
+
+    <div class="kit-group">
+      <p class="kit-label">На светлом фоне — полный размер</p>
+      <div style="display:flex;align-items:center;justify-content:center;padding:var(--sp-16) var(--sp-8);background:#FFFFFF;border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+        <img src="/img/logo.png" alt="Маргарита Иванова — логотип" style="width:320px;max-width:100%;height:auto">
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Размеры</p>
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--sp-8);padding:var(--sp-8);background:#FFFFFF;border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)">
+          <img src="/img/logo.png" alt="" style="width:80px;height:auto">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">80px — фавикон-контекст</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)">
+          <img src="/img/logo.png" alt="" style="width:160px;height:auto">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">160px — мобайл</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)">
+          <img src="/img/logo.png" alt="" style="width:260px;height:auto">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">260px — десктоп / документы</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)">
+          <img src="/img/logo.png" alt="" style="width:400px;max-width:100%;height:auto">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">400px — печать / презентация</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">На фоне сайта (--color-bg)</p>
+      <div style="display:flex;align-items:center;justify-content:center;padding:var(--sp-12) var(--sp-8);background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+        <img src="/img/logo.png" alt="Маргарита Иванова — логотип" style="width:260px;max-width:100%;height:auto">
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">На фоне bg-alt (секции чередования)</p>
+      <div style="display:flex;align-items:center;justify-content:center;padding:var(--sp-12) var(--sp-8);background:var(--color-bg-alt);border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+        <img src="/img/logo.png" alt="Маргарита Иванова — логотип" style="width:260px;max-width:100%;height:auto">
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Охранное поле</p>
+      <div style="padding:var(--sp-8);background:#FFFFFF;border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+        <div style="position:relative;display:inline-block">
+          <img src="/img/logo.png" alt="" style="width:260px;height:auto;display:block">
+          <div style="position:absolute;inset:0;border:2px dashed var(--color-accent-light);border-radius:4px;pointer-events:none"></div>
+          <div style="position:absolute;inset:-24px;border:1px dashed var(--color-border);border-radius:4px;pointer-events:none"></div>
+        </div>
+        <p style="margin-top:var(--sp-6);font-size:var(--text-xs);color:var(--color-text-muted)">Минимальный отступ вокруг логотипа — 24px (≈ <code>--sp-6</code>). Внутреннее поле логотипа — встроено в файл.</p>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Файл</p>
+      <table style="border-collapse:collapse;font-size:var(--text-sm);width:100%;max-width:480px">
+        <tbody>
+          <tr style="border-bottom:1px solid var(--color-border)">
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text-muted);white-space:nowrap">Путь</td>
+            <td style="padding:var(--sp-3) var(--sp-4);font-family:monospace;color:var(--color-text)">docs/logo.png</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--color-border)">
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text-muted)">Формат</td>
+            <td style="padding:var(--sp-3) var(--sp-4);font-family:monospace;color:var(--color-text)">PNG с белым фоном</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--color-border)">
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text-muted)">Монограмма</td>
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text)">МИ — в скруглённом квадрате</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--color-border)">
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text-muted)">Название</td>
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text)">Маргарита Иванова</td>
+          </tr>
+          <tr>
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text-muted)">Подзаголовок</td>
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text)">психолог · обучающий личный терапевт</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════ LOGO HORIZONTAL TRANSPARENT ════════ -->
+  <section class="kit-section" id="logo-horizontal">
+    <h2 class="kit-section__title">Логотип горизонтальный (прозрачный фон)</h2>
+    <p class="kit-section__desc">Горизонтальная версия на прозрачном фоне. Файл: <code>docs/logo-horizontal-transparent.png</code>.</p>
+
+    <div class="kit-group">
+      <p class="kit-label">На белом фоне</p>
+      <div style="display:flex;align-items:center;justify-content:center;padding:var(--sp-12) var(--sp-8);background:#FFFFFF;border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+        <img src="logo-horizontal-transparent.png" alt="Маргарита Иванова — горизонтальный логотип" style="width:320px;max-width:100%;height:auto">
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">На фоне сайта (--color-bg)</p>
+      <div style="display:flex;align-items:center;justify-content:center;padding:var(--sp-12) var(--sp-8);background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+        <img src="logo-horizontal-transparent.png" alt="Маргарита Иванова — горизонтальный логотип" style="width:320px;max-width:100%;height:auto">
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">На тёмном фоне (--color-cta-bg)</p>
+      <div style="display:flex;align-items:center;justify-content:center;padding:var(--sp-12) var(--sp-8);background:var(--color-cta-bg);border-radius:var(--radius-lg)">
+        <img src="logo-horizontal-transparent.png" alt="Маргарита Иванова — горизонтальный логотип" style="width:320px;max-width:100%;height:auto">
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Размеры</p>
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--sp-8);padding:var(--sp-8);background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)">
+          <img src="logo-horizontal-transparent.png" alt="" style="width:120px;height:auto">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">120px — мобайл</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)">
+          <img src="logo-horizontal-transparent.png" alt="" style="width:240px;height:auto">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">240px — навигация / шапка</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-3)">
+          <img src="logo-horizontal-transparent.png" alt="" style="width:380px;max-width:100%;height:auto">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted)">380px — документы / печать</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Файл</p>
+      <table style="border-collapse:collapse;font-size:var(--text-sm);width:100%;max-width:480px">
+        <tbody>
+          <tr style="border-bottom:1px solid var(--color-border)">
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text-muted);white-space:nowrap">Путь</td>
+            <td style="padding:var(--sp-3) var(--sp-4);font-family:monospace;color:var(--color-text)">docs/logo-horizontal-transparent.png</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--color-border)">
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text-muted)">Формат</td>
+            <td style="padding:var(--sp-3) var(--sp-4);font-family:monospace;color:var(--color-text)">PNG с прозрачным фоном</td>
+          </tr>
+          <tr>
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text-muted)">Ориентация</td>
+            <td style="padding:var(--sp-3) var(--sp-4);color:var(--color-text)">Горизонтальная</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════ NAVIGATION ════════ -->
+  <section class="kit-section" id="navigation">
+    <h2 class="kit-section__title">Навигация</h2>
+    <p class="kit-section__desc">Sticky header с backdrop-blur. На мобайле переходит в drawer с hamburger.</p>
+
+    <div class="kit-group">
+      <p class="kit-label">Desktop header</p>
+      <div class="nav-demo">
+        <span class="nav-logo">Маргарита Иванова</span>
+        <div class="nav-links">
+          <a href="#">Обо мне</a>
+          <a href="#">Направления</a>
+          <a href="#">Форматы</a>
+          <a href="#">Вопросы</a>
+          <button class="btn btn--nav">Записаться</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Hamburger (mobile)</p>
+      <div class="kit-row">
+        <button class="hamburger" aria-label="Открыть меню">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ CARDS ════════ -->
+  <section class="kit-section" id="cards">
+    <h2 class="kit-section__title">Карточки</h2>
+    <p class="kit-section__desc">Hover — translateY + box-shadow. Границы смягчаются к accent-light.</p>
+
+    <div class="kit-group">
+      <p class="kit-label">Area card (направление)</p>
+      <div class="kit-row">
+        <article class="area-card">
+          <div class="area-card__icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 4C9.37 4 4 9.37 4 16s5.37 12 12 12 12-5.37 12-12S22.63 4 16 4z" stroke="currentColor" stroke-width="1.5"/><path d="M16 10v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3 class="area-card__title">Тревога и эмоциональная перегрузка</h3>
+          <p class="area-card__text">Тревожные состояния, панические атаки, ощущение постоянного напряжения.</p>
+        </article>
+
+        <article class="area-card">
+          <div class="area-card__icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="12" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M6 26c0-5.52 4.48-10 10-10s10 4.48 10 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3 class="area-card__title">Отношения с собой</h3>
+          <p class="area-card__text">Самооценка, внутренний критик, сложности с принятием себя, поиск ценностей.</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Principle card (принцип работы)</p>
+      <div class="kit-row">
+        <div class="principle">
+          <div class="principle__icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="14" r="2" fill="currentColor"/></svg>
+          </div>
+          <h3 class="principle__title">Безопасное пространство</h3>
+          <p>Конфиденциальность, отсутствие осуждения и уважение к вашей истории.</p>
+        </div>
+
+        <div class="principle">
+          <div class="principle__icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 5l2.09 6.26L22 12l-5 4.74L18.18 23 14 19.77 9.82 23 11 16.74 6 12l5.91-.74L14 5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <h3 class="principle__title">Глубина без давления</h3>
+          <p>Мы касаемся важного — бережно, с уважением к вашим границам.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Trust item (почему выбирают)</p>
+      <div class="kit-row">
+        <div class="trust__item">
+          <div class="trust__item-icon">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="14" stroke="currentColor" stroke-width="1.5"/><path d="M12 18l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Уважение к вашему темпу</h3>
+          <p>Я не тороплю изменения и не форсирую работу. Мы двигаемся так, как вам комфортно.</p>
+        </div>
+
+        <div class="trust__item">
+          <div class="trust__item-icon">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="6" y="10" width="24" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M18 16v6M15 19h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Конфиденциальность</h3>
+          <p>Всё, что происходит на наших встречах, остаётся только между нами.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Format card (формат работы)</p>
+      <div class="kit-row">
+        <article class="format-card format-card--primary">
+          <span class="format-card__label">Основной формат</span>
+          <h3 class="format-card__title">Индивидуальная психологическая работа</h3>
+          <p class="format-card__desc">Личные встречи, в которых мы сосредоточены на вас — вашем запросе, вашем состоянии, вашем темпе.</p>
+          <div class="format-card__price">
+            <span class="format-card__price-amount">5000 ₽</span>
+            <span class="format-card__price-note">за сессию</span>
+          </div>
+          <button class="btn btn--primary btn--full">Записаться</button>
+        </article>
+
+        <article class="format-card">
+          <span class="format-card__label format-card__label--alt">Для специалистов</span>
+          <h3 class="format-card__title">Обучающая личная терапия</h3>
+          <p class="format-card__desc">Особый формат для психологов и студентов помогающих профессий.</p>
+          <div class="format-card__price">
+            <span class="format-card__price-amount">5000 ₽</span>
+            <span class="format-card__price-note">за сессию</span>
+          </div>
+          <button class="btn btn--outline btn--full">Узнать о формате</button>
+        </article>
+      </div>
+    </div>
+
+    <div class="kit-group">
+      <p class="kit-label">Testimonial card (отзыв)</p>
+      <div class="kit-row">
+        <article class="testimonial-card">
+          <div class="testimonial-card__stars" aria-label="5 из 5">★★★★★</div>
+          <blockquote>
+            <p>«После первой встречи я почувствовала, что меня слышат. Это очень важно.»</p>
+          </blockquote>
+          <footer class="testimonial-card__footer">
+            <strong>Анна К.</strong>
+            <span>2025</span>
+          </footer>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ PROCESS STEP ════════ -->
+  <section class="kit-section" id="process">
+    <h2 class="kit-section__title">Шаги процесса</h2>
+    <p class="kit-section__desc">На десктопе — 4 колонки, на мобайле — вертикальный список.</p>
+
+    <div class="kit-col">
+      <div class="process__step">
+        <div class="process__step-num">01</div>
+        <div class="process__step-content">
+          <h3>Ваша заявка</h3>
+          <p>Напишите мне — в мессенджер, по почте или через форму. Это ни к чему не обязывает.</p>
+        </div>
+      </div>
+
+      <div class="process__step">
+        <div class="process__step-num">02</div>
+        <div class="process__step-content">
+          <h3>Согласование</h3>
+          <p>Мы договариваемся о формате и времени встречи — онлайн или очно.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ QUOTES & NOTES ════════ -->
+  <section class="kit-section" id="quotes">
+    <h2 class="kit-section__title">Цитата и заметка</h2>
+    <p class="kit-section__desc">Blockquote с акцентной левой линией. Supervision note — информационный блок.</p>
+
+    <div class="kit-col">
+      <blockquote class="about__quote">
+        <p>«Каждый человек несёт в себе способность к изменению — иногда для этого нужен лишь безопасный контакт с другим человеком»</p>
+      </blockquote>
+
+      <div class="supervision-note">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 9v5M10 6.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <p>Регулярно прохожу супервизию и личную терапию — как часть профессиональной ответственности перед клиентами.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ COUNTERS ════════ -->
+  <section class="kit-section" id="counters">
+    <h2 class="kit-section__title">Счётчики (trust stats)</h2>
+    <p class="kit-section__desc">Используются в Hero-секции для подтверждения опыта.</p>
+
+    <div class="trust-counters">
+      <div class="trust-counter">
+        <span class="trust-counter__num">2000+</span>
+        <span class="trust-counter__label">часов практики</span>
+      </div>
+      <div class="trust-sep" aria-hidden="true"></div>
+      <div class="trust-counter">
+        <span class="trust-counter__num">200+</span>
+        <span class="trust-counter__label">часов личной терапии</span>
+      </div>
+      <div class="trust-sep" aria-hidden="true"></div>
+      <div class="trust-counter">
+        <span class="trust-counter__num">Онлайн</span>
+        <span class="trust-counter__label">и очно</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FORMS ════════ -->
+  <section class="kit-section" id="forms">
+    <h2 class="kit-section__title">Элементы формы</h2>
+    <p class="kit-section__desc">Focus-ring через box-shadow, без outline. Акцент — терракота.</p>
+
+    <div class="kit-col">
+
+      <div class="form__group">
+        <label for="demo-name" class="form__label">Ваше имя <span aria-hidden="true">*</span></label>
+        <input type="text" id="demo-name" class="form__input" placeholder="Как вас зовут?">
+      </div>
+
+      <div class="form__group">
+        <label for="demo-name-filled" class="form__label">Заполненное поле</label>
+        <input type="text" id="demo-name-filled" class="form__input" value="Анна">
+      </div>
+
+      <div class="form__group">
+        <label for="demo-error" class="form__label">Поле с ошибкой <span aria-hidden="true">*</span></label>
+        <input type="text" id="demo-error" class="form__input form__input--error" value="неверный формат">
+        <p class="form__error">Пожалуйста, проверьте правильность ввода</p>
+      </div>
+
+      <div class="form__group">
+        <label for="demo-message" class="form__label">
+          Коротко о запросе <span class="form__label-note">(необязательно)</span>
+        </label>
+        <textarea id="demo-message" class="form__textarea" placeholder="С чем хотите обратиться? Можно в двух словах."></textarea>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════ FAQ ════════ -->
+  <section class="kit-section" id="faq">
+    <h2 class="kit-section__title">FAQ аккордеон</h2>
+    <p class="kit-section__desc">Анимация через <code>max-height</code> + <code>padding</code>. Иконка +/×.</p>
+
+    <div class="faq__list">
+
+      <div class="faq__item is-open">
+        <button class="faq__question" aria-expanded="true">
+          С чем можно обратиться?
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq__answer">
+          <p>Поводом для обращения может быть что угодно, что вас беспокоит — тревога, сложности в отношениях, ощущение потери смысла, кризис, желание лучше понять себя.</p>
+        </div>
+      </div>
+
+      <div class="faq__item">
+        <button class="faq__question" aria-expanded="false">
+          Можно ли работать онлайн?
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq__answer">
+          <p>Да, я работаю онлайн и очно. По моему опыту, онлайн-формат ничем не уступает очному в глубине и эффективности.</p>
+        </div>
+      </div>
+
+      <div class="faq__item">
+        <button class="faq__question" aria-expanded="false">
+          Сколько длится работа?
+          <span class="faq__icon" aria-hidden="true"></span>
+        </button>
+        <div class="faq__answer">
+          <p>Это зависит от запроса. Для работы с конкретной ситуацией может быть достаточно нескольких встреч.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // FAQ accordion interaction
+  document.querySelectorAll('.faq__question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq__item');
+      const isOpen = item.classList.contains('is-open');
+
+      document.querySelectorAll('.faq__item.is-open').forEach(el => {
+        el.classList.remove('is-open');
+        el.querySelector('.faq__question').setAttribute('aria-expanded', 'false');
+      });
+
+      if (!isOpen) {
+        item.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
