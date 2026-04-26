@@ -98,14 +98,17 @@
 
         <div class="hero__photo-wrap reveal">
           <div class="hero__photo-blob" aria-hidden="true"></div>
-          <img
-            src="img/photo1.png"
-            alt="Маргарита Иванова — психолог"
-            class="hero__photo"
-            width="480"
-            height="600"
-            loading="eager"
-          >
+          <picture>
+            <source srcset="img/photo1.webp" type="image/webp">
+            <img
+              src="img/photo1.jpg"
+              alt="Маргарита Иванова — психолог"
+              class="hero__photo"
+              width="480"
+              height="600"
+              loading="eager"
+            >
+          </picture>
         </div>
       </div>
     </section>
@@ -172,14 +175,17 @@
 
         <aside class="about__aside reveal">
           <div class="about__photo-wrap">
-            <img
-              src="img/photo2.png"
-              alt="Маргарита Иванова"
-              class="about__photo"
-              width="420"
-              height="600"
-              loading="lazy"
-            >
+            <picture>
+              <source srcset="img/photo2.webp" type="image/webp">
+              <img
+                src="img/photo2.jpg"
+                alt="Маргарита Иванова"
+                class="about__photo"
+                width="420"
+                height="600"
+                loading="lazy"
+              >
+            </picture>
           </div>
           <blockquote class="about__quote">
             <p>«Каждый человек несёт в себе способность к изменению — иногда для этого нужен лишь безопасный контакт с другим человеком»</p>
