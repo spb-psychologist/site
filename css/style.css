@@ -300,7 +300,7 @@ p {
 
 .btn--nav {
   background: var(--color-accent);
-  color: var(--color-white);
+  color: var(--color-white) !important;
   border-color: var(--color-accent);
   padding: 9px 20px;
   font-size: var(--text-sm);
