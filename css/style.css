@@ -432,7 +432,7 @@ p {
    7. HERO
    ============================================ */
 .hero {
-  padding-block: clamp(48px, 8vw, 112px);
+  padding-block: clamp(48px, 8vw, 80px);
   overflow: hidden;
 }
 
